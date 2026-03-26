@@ -31,7 +31,7 @@ def crop(wf_img, save_wf_path, patch_size=256, overlap=0.125):
     
     x = border
     x_end = wf_img.shape[0] - border
-    y_end = wf_img.shape[0] - border
+    y_end = wf_img.shape[1] - border
     row = 0
     while x + patch_size < x_end:
         y = border
