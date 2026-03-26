@@ -154,14 +154,24 @@ class LogTracker:
         self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
         self.reset()
 
+    # def reset(self):
+    #     for col in self._data.columns:
+    #         self._data[col].values[:] = 0
+    
     def reset(self):
-        for col in self._data.columns:
-            self._data[col].values[:] = 0
+    # pandasの代入にしてread-only問題を回避
+        self._data.loc[:, :] = 0
 
     def update(self, key, value, n=1):
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
+        # self._data.total[key] += value * n
+        # self._data.counts[key] += n
+        # self._data.average[key] = self._data.total[key] / self._data.counts[key]
+        # modified
+        # key は DataFrame の index（行）として使う想定
+        self._data.loc[key, "total"]  = self._data.loc[key, "total"]  + value * n
+        self._data.loc[key, "counts"] = self._data.loc[key, "counts"] + n
+        c = self._data.loc[key, "counts"]
+        self._data.loc[key, "average"] = (self._data.loc[key, "total"] / c) if c != 0 else 0
 
     def avg(self, key):
         return self._data.average[key]
